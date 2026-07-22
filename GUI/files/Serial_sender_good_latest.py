@@ -13,6 +13,7 @@ import numpy as np
 from spatialmath import *
 import platform
 import os
+import sys
 import re
 import math
 from roboticstoolbox import trapezoidal
@@ -28,12 +29,11 @@ from spatialmath.base.argcheck import (
 
 
 my_os = platform.system()
-if my_os == "Windows":
+if getattr(sys, "frozen", False):
+    Image_path = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+else:
     Image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
-    logging.debug("Os is Windows")
-else: 
-    Image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
-    logging.debug("Os is Linux")
+logging.debug("Os is %s", my_os)
 
 print("run this")
 logging.basicConfig(level = logging.DEBUG,
@@ -42,7 +42,7 @@ logging.basicConfig(level = logging.DEBUG,
 )
 
 if my_os == "Windows": 
-    STARTING_PORT = 58 # COM3
+    STARTING_PORT = 5 # COM3
 else:   
     STARTING_PORT = 0
 # if using linux this will add /dev/ttyACM + 0 ---> /dev/ttyACM0
@@ -2640,8 +2640,13 @@ def SIMULATOR_process(Position_out,Position_in,Position_Sim,Buttons):
 # Gore u thredovima i funkcijama to nazovem kako oćem i pozivam stvari iz toga i tjt
 if __name__ == '__main__':
 
+    # Required when frozen (PyInstaller): without this, a spawned worker
+    # re-executes the whole packaged app from the top instead of running
+    # only its target function, spawning its own workers recursively.
+    multiprocessing.freeze_support()
+
     print("running")
-    time.sleep(0.01) 
+    time.sleep(0.01)
 
     try:
         ser.close()

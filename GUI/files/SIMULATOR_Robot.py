@@ -7,6 +7,7 @@ import roboticstoolbox as rp
 import numpy as np
 import platform
 import os
+import sys
 import PIL
 from PIL import Image, ImageTk
 import logging
@@ -30,12 +31,11 @@ logging.basicConfig(level = logging.DEBUG,
 
 # Finds out where the program and images are stored
 my_os = platform.system()
-if my_os == "Windows":
-    Image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
-    logging.debug("Os is Windows")
+if getattr(sys, "frozen", False):
+    Image_path = getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
 else:
     Image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
-    logging.debug("Os is Linux")
+logging.debug("Os is %s", my_os)
     
 logging.debug(Image_path)
 
